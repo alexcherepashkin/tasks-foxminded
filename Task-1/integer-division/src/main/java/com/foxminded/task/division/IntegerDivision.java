@@ -1,4 +1,4 @@
-package ua.alexch.task3;
+package com.foxminded.task.division;
 
 public class IntegerDivision {
 

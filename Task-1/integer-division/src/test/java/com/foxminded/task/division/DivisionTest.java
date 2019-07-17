@@ -1,4 +1,4 @@
-package ua.alexch.task3;
+package com.foxminded.task.division;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
