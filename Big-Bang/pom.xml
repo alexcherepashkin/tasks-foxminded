@@ -21,6 +21,7 @@
         <module>anagram-mentor-version</module>
         <module>anagrams</module>
         <module>integer-division</module>
+        <module>chars-number</module>
     </modules>
 
     <dependencyManagement>
