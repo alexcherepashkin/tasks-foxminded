@@ -22,6 +22,7 @@
         <module>anagrams</module>
         <module>integer-division</module>
         <module>chars-number</module>
+        <module>formula1-qualification</module>
     </modules>
 
     <dependencyManagement>
