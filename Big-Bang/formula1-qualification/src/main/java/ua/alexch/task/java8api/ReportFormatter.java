@@ -14,17 +14,15 @@ public class ReportFormatter {
         AtomicInteger counter = new AtomicInteger();
 
         racers.stream()
-//            .sorted(Comparator.comparing(Racer::getLapTime))
             .sorted(racerComparator)
             .forEach(racer -> {
                 int index = counter.incrementAndGet();
-                
-                if ((index - 1) == topRacers) {
-                    report.append(createUnderline("-", 63) + "\n");
-                }
-                
                 report.append(String.format("%-21s | %-27s | %s%n", 
                         index + ". " + racer.getRacerName(), racer.getTeam(), formatLapTime(racer.getLapTime())));
+                
+                if ((index) == topRacers) {
+                    report.append(createDividerLine("-", 63) + "\n");
+                }
         });
 
         return report.toString();
@@ -35,7 +33,7 @@ public class ReportFormatter {
         return String.format("%1$tM:%1$tS.%1$tL", lapTime);
     }
 
-    private String createUnderline(String symbol, int num) {
+    private String createDividerLine(String symbol, int num) {
         StringBuilder line = new StringBuilder();
 
         for (int i = 0; i < num; i++) {

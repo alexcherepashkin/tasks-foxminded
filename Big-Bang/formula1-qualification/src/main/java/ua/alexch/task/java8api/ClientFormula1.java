@@ -1,12 +1,19 @@
 package ua.alexch.task.java8api;
 
+import java.util.List;
+
 public class ClientFormula1 {
 
     public static void main(String[] args) {
-        RacersCreator racers = new RacersCreator();
+        RacersReader racersReader = new RacersReader();
+        RacersLogReader logReader = new RacersLogReader();
         ReportFormatter formatter = new ReportFormatter();
+
         int topRacers = 15;
-        String report = formatter.format(racers.readData("start.log", "end.log", "abbreviations.txt"), topRacers);
+        List<Racer> racers = racersReader.readEachRacer(logReader.readLineByLine("start.log"),
+                logReader.readLineByLine("end.log"), logReader.readLineByLine("abbreviations.txt"));
+
+        String report = formatter.format(racers, topRacers);
 
         System.out.println(report);
     }
