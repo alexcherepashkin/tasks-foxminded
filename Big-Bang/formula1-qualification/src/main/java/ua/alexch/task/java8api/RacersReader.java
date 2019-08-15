@@ -37,9 +37,13 @@ public class RacersReader {
         return Duration.between(startTime, endTime).toMillis();
     }
 
-    private void addRacer(String racerStart, List<String> abbreviations, Long lapTime) {
+    public void addRacer(String racerStart, List<String> abbreviations, Long lapTime) {
         abbreviations.stream()
             .filter(abbreviation -> toAbbreviation.apply(racerStart).equals(toAbbreviation.apply(abbreviation)))
             .forEach(abbreviation -> racers.add(new Racer(toName.apply(abbreviation), toTeam.apply(abbreviation), lapTime)));
+    }
+    
+    public List<Racer> getRacersList() {
+        return racers;
     }
 }

@@ -17,8 +17,8 @@ public class ReportFormatter {
             .sorted(racerComparator)
             .forEach(racer -> {
                 int index = counter.incrementAndGet();
-                report.append(String.format("%-21s | %-27s | %s%n", 
-                        index + ". " + racer.getRacerName(), racer.getTeam(), formatLapTime(racer.getLapTime())));
+                report.append(String.format("%1$-21s | %2$-27s | %3$tM:%3$tS.%3$tL\n",
+                        index + ". " + racer.getRacerName(), racer.getTeam(), racer.getLapTime()));
                 
                 if ((index) == topRacers) {
                     report.append(createDividerLine("-", 63) + "\n");
@@ -28,10 +28,11 @@ public class ReportFormatter {
         return report.toString();
     }
 
-    private String formatLapTime(Long lapTime) {
-        
-        return String.format("%1$tM:%1$tS.%1$tL", lapTime);
-    }
+//    Вопрос по этому методу!
+//    private String formatLapTime(Long lapTime) {
+//        
+//        return String.format("%1$tM:%1$tS.%1$tL", lapTime);
+//    }
 
     private String createDividerLine(String symbol, int num) {
         StringBuilder line = new StringBuilder();
