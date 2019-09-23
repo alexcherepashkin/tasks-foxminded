@@ -1,55 +1,55 @@
-package ua.alexch.task.sql;
+package ua.alexch.task.sql.model;
 
 public class Student {
-    private int student_id;
-    private int group_id;
+    private Long student_id;
+    private Long group_id;
     private String first_name;
     private String last_name;
 
-    Student() {
+    public Student() {
     }
 
-    Student(String first_name, String last_name) {
+    public Student(String first_name, String last_name) {
         this.first_name = first_name;
         this.last_name = last_name;
     }
 
-    Student(int student_id, int group_id, String first_name, String last_name) {
+    public Student(Long student_id, Long group_id, String first_name, String last_name) {
         this.student_id = student_id;
         this.group_id = group_id;
         this.first_name = first_name;
         this.last_name = last_name;
     }
 
-    int getStudentId() {
+    public Long getStudentId() {
         return student_id;
     }
 
-    void setStudentId(int student_id) {
+    public void setStudentId(Long student_id) {
         this.student_id = student_id;
     }
 
-    int getGroupId() {
+    public Long getGroupId() {
         return group_id;
     }
 
-    void setGroupId(int group_id) {
+    public void setGroupId(Long group_id) {
         this.group_id = group_id;
     }
 
-    String getFirstName() {
+    public String getFirstName() {
         return first_name;
     }
 
-    void setFirstName(String first_name) {
+    public void setFirstName(String first_name) {
         this.first_name = first_name;
     }
 
-    String getLastName() {
+    public String getLastName() {
         return last_name;
     }
 
-    void setLastName(String last_name) {
+    public void setLastName(String last_name) {
         this.last_name = last_name;
     }
 

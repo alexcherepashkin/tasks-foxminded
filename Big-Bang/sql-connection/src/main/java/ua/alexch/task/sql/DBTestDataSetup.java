@@ -20,17 +20,17 @@ public class DBTestDataSetup {
             "Philosophy/Humanitarian sciences", "Archeology/Humanitarian sciences", "Economics/Social sciences",
             "Chemistry/Natural sciences", "Biology/Natural sciences");
 
-    private List<Integer> groupIds;
-    private List<Integer> courseIds;
-    private List<Integer> studentIds;
+    private List<Long> groupIds;
+    private List<Long> courseIds;
+    private List<Long> studentIds;
 
-    private DBManager manager;
+    private UniversityFacade universityFacade;
 
-    public DBTestDataSetup() {
+    public DBTestDataSetup(DBConnectionFactory connectionFactory) {
         groupIds = new ArrayList<>();
         courseIds = new ArrayList<>();
         studentIds = new ArrayList<>();
-        manager = new DBManager();
+        universityFacade = new UniversityFacade(connectionFactory);
     }
 
     public void setupTestData() {
@@ -42,9 +42,9 @@ public class DBTestDataSetup {
     }
 
     public void addGroups() {
-        int groupId;
+        Long groupId;
         for (int i = 0; i < 10; i++) {
-            groupId = manager.addGroup(generateGroupName());
+            groupId = universityFacade.addGroup(generateGroupName());
             groupIds.add(groupId);
         }
 
@@ -52,10 +52,10 @@ public class DBTestDataSetup {
     }
 
     public void addCourses() {
-        int courseId;
+        Long courseId;
         for (String courseData : courseList) {
             String[] data = courseData.split("/");
-            courseId = manager.addCourse(data[0], data[1]);
+            courseId = universityFacade.addCourse(data[0], data[1]);
             courseIds.add(courseId);
         }
 
@@ -63,10 +63,10 @@ public class DBTestDataSetup {
     }
 
     public void addStudents() {
-        int studentId;
+        Long studentId;
 
         for (int i = 0; i < 200; i++) {
-            studentId = manager.addStudent(getRandomName(firstNames), getRandomName(lastNames));
+            studentId = universityFacade.addStudent(getRandomName(firstNames), getRandomName(lastNames));
             studentIds.add(studentId);
         }
 
@@ -74,7 +74,7 @@ public class DBTestDataSetup {
     }
 
     public void assignStudents() {
-        manager.assignStudentsToGroups(studentIds, groupIds);
+        universityFacade.assignStudentsToGroups(studentIds, groupIds);
         System.out.println("All students are assigned");
     }
 
@@ -82,14 +82,14 @@ public class DBTestDataSetup {
         Random random = new Random();
         int courseIdsIndex = Integer.MAX_VALUE;
 
-        for (int studentId : studentIds) {
+        for (Long studentId : studentIds) {
             for (int i = random.nextInt(3) + 1; i > 0; i--) {
                 if (courseIdsIndex >= courseIds.size()) {
                     Collections.shuffle(courseIds);
                     courseIdsIndex = 0;
                 }
 
-                manager.enrollStudentToCourse(studentId, courseIds.get(courseIdsIndex));
+                universityFacade.enrollStudentToCourse(studentId, courseIds.get(courseIdsIndex));
                 courseIdsIndex++;
             }
             courseIdsIndex = Integer.MAX_VALUE;

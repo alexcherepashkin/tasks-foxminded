@@ -8,10 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class TableCreater {
-    private DBConnectionBuilder connectionBuilder = new DBConnectionBuilder();
+    private final DBConnectionFactory connectionFactory;
+
+    public TableCreater(DBConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
     public void createTable(File fileSql) {
-        try (Connection conn = connectionBuilder.getConnection();
+        try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement statement = conn.prepareStatement(readSqlFile(fileSql))) {
 
             statement.execute();

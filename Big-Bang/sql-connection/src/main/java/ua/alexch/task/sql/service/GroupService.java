@@ -1,4 +1,4 @@
-package ua.alexch.task.sql;
+package ua.alexch.task.sql.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import ua.alexch.task.sql.DBConnectionFactory;
+import ua.alexch.task.sql.model.Group;
 
 public class GroupService {
     private static final String INSERT_ONE = "INSERT INTO groups (group_name) VALUES (?)";
@@ -18,12 +21,16 @@ public class GroupService {
                                                 + "GROUP BY group_id, group_name "
                                                 + "ORDER BY COUNT (*) LIMIT 2";
 
-    private DBConnectionBuilder connectionBuilder = new DBConnectionBuilder();
+    private final DBConnectionFactory connectionFactory;
+    
+    public GroupService(DBConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
-    Integer addGroup(String groupName) {
-        int groupId = -1;
+    public Long addGroup(String groupName) {
+        Long groupId = -1L;
 
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT_ONE,
                         Statement.RETURN_GENERATED_KEYS)) {
 
@@ -32,7 +39,7 @@ public class GroupService {
 
             ResultSet key = statement.getGeneratedKeys();
             if (key.next()) {
-                groupId = key.getInt("group_id");
+                groupId = key.getLong("group_id");
             }
             key.close();
 
@@ -43,10 +50,10 @@ public class GroupService {
         return groupId;
     }
 
-    List<Group> findAllGroups() {
+    public List<Group> findAllGroups() {
         List<Group> groups = new ArrayList<>();
 
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SELECT_ALL);
                 ResultSet groupsData = statement.executeQuery()) {
 
@@ -61,12 +68,12 @@ public class GroupService {
         return groups;
     }
 
-    Group getGroupById(int groupId) {
+    public Group getGroupById(Long groupId) {
         Group group = null;
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
 
-            statement.setInt(1, groupId);
+            statement.setLong(1, groupId);
             ResultSet groupData = statement.executeQuery();
             if (groupData.next()) {
                 group = fillGroupEntity(groupData);
@@ -80,11 +87,11 @@ public class GroupService {
         return group;
     }
 
-    void deleteGroupById(int groupId) {
-        try (Connection connection = connectionBuilder.getConnection();
+    public void deleteGroupById(Long groupId) {
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
 
-            statement.setInt(1, groupId);
+            statement.setLong(1, groupId);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -92,10 +99,10 @@ public class GroupService {
         }
     }
 
-    List<Group> findGroupsWithLessStudentCount() {
+    public List<Group> findGroupsWithLessStudentCount() {
         List<Group> groups = new ArrayList<>();
 
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_COUNT);
                 ResultSet result = statement.executeQuery()) {
 
@@ -112,7 +119,7 @@ public class GroupService {
 
     private Group fillGroupEntity(ResultSet data) throws SQLException {
         Group group = new Group();
-        group.setGroupId(data.getInt("group_id"));
+        group.setGroupId(data.getLong("group_id"));
         group.setName(data.getString("group_name"));
         return group;
     }

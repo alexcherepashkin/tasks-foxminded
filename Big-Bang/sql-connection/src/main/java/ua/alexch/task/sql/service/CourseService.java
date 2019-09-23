@@ -1,4 +1,4 @@
-package ua.alexch.task.sql;
+package ua.alexch.task.sql.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ua.alexch.task.sql.DBConnectionFactory;
+import ua.alexch.task.sql.model.Course;
+
 public class CourseService {
     private static final String INSERT_ONE = "INSERT INTO courses (course_name, course_description) VALUES (?, ?)";
     private static final String SELECT_ALL = "SELECT * FROM courses ORDER BY course_id";
@@ -16,12 +19,16 @@ public class CourseService {
     private static final String INSERT_BY_IDS = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
     private static final String REMOVE_BY_IDS = "DELETE FROM students_courses WHERE student_id=? AND course_id=?;";
 
-    private DBConnectionBuilder connectionBuilder = new DBConnectionBuilder();
+    private final DBConnectionFactory connectionFactory;
+    
+    public CourseService(DBConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
-    Integer addCourse(String courseName, String courseDescription) {
-        int courseId = -1;
+    public Long addCourse(String courseName, String courseDescription) {
+        Long courseId = -1L;
 
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT_ONE,
                         Statement.RETURN_GENERATED_KEYS)) {
 
@@ -31,7 +38,7 @@ public class CourseService {
 
             ResultSet key = statement.getGeneratedKeys();
             if (key.next()) {
-                courseId = key.getInt("course_id");
+                courseId = key.getLong("course_id");
             }
             key.close();
 
@@ -42,10 +49,10 @@ public class CourseService {
         return courseId;
     }
 
-    List<Course> findAllCourses() {
+    public List<Course> findAllCourses() {
         List<Course> courses = new ArrayList<>();
 
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SELECT_ALL);
                 ResultSet coursesData = statement.executeQuery()) {
 
@@ -60,12 +67,12 @@ public class CourseService {
         return courses;
     }
 
-    Course getCourseById(int courseId) {
+    public Course getCourseById(Long courseId) {
         Course course = null;
-        try (Connection connection = connectionBuilder.getConnection();
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
 
-            statement.setInt(1, courseId);
+            statement.setLong(1, courseId);
             ResultSet courseData = statement.executeQuery();
             if (courseData.next()) {
                 course = fillCourseEntity(courseData);
@@ -79,11 +86,11 @@ public class CourseService {
         return course;
     }
 
-    void deleteCourseById(int courseId) {
-        try (Connection connection = connectionBuilder.getConnection();
+    public void deleteCourseById(Long courseId) {
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
 
-            statement.setInt(1, courseId);
+            statement.setLong(1, courseId);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -91,12 +98,12 @@ public class CourseService {
         }
     }
 
-    void enrollStudentToCourse(int studentId, int courseId) {
-        try (Connection connection = connectionBuilder.getConnection();
+    public void enrollStudentToCourse(Long studentId, Long courseId) {
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT_BY_IDS)) {
 
-            statement.setInt(1, studentId);
-            statement.setInt(2, courseId);
+            statement.setLong(1, studentId);
+            statement.setLong(2, courseId);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -104,12 +111,12 @@ public class CourseService {
         }
     }
 
-    void removeStudentFromCourse(int studentId, int courseId) {
-        try (Connection connection = connectionBuilder.getConnection();
+    public void removeStudentFromCourse(Long studentId, Long courseId) {
+        try (Connection connection = connectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(REMOVE_BY_IDS)) {
 
-            statement.setInt(1, studentId);
-            statement.setInt(2, courseId);
+            statement.setLong(1, studentId);
+            statement.setLong(2, courseId);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -119,7 +126,7 @@ public class CourseService {
 
     private Course fillCourseEntity(ResultSet data) throws SQLException {
         Course course = new Course();
-        course.setCourseId(data.getInt("course_id"));
+        course.setCourseId(data.getLong("course_id"));
         course.setName(data.getString("course_name"));
         course.setDescription(data.getString("course_description"));
         return course;
