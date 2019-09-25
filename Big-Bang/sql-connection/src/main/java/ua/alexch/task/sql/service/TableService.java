@@ -1,4 +1,4 @@
-package ua.alexch.task.sql;
+package ua.alexch.task.sql.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,22 +7,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class TableCreater {
+import ua.alexch.task.sql.DBConnectionFactory;
+
+public class TableService {
     private final DBConnectionFactory connectionFactory;
 
-    public TableCreater(DBConnectionFactory connectionFactory) {
+    public TableService(DBConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
-    public void createTable(File fileSql) {
+    public void setupTables(File fileSql) {
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement statement = conn.prepareStatement(readSqlFile(fileSql))) {
 
             statement.execute();
-            System.out.println("Table created!");
+            System.out.println("Setup tables completed!");
 
         } catch (SQLException e) {
-            System.out.println("Error creating table!");
+            System.out.println("Setup error!");
             e.printStackTrace();
         }
     }

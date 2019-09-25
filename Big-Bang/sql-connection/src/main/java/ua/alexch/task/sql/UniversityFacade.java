@@ -64,6 +64,10 @@ public class UniversityFacade {
         courseService.removeStudentFromCourse(studentId, courseId);
     }
 
+    public List<Course> findCoursesByStudentId(Long studentId) {
+        return courseService.findCoursesByStudentId(studentId);
+    }
+
     public Long addStudent(String firstName, String lastName) {
         return studentService.addStudent(firstName, lastName);
     }

@@ -17,10 +17,13 @@ public class CourseService {
     private static final String SELECT_BY_ID = "SELECT * FROM courses WHERE course_id=?";
     private static final String DELETE_BY_ID = "DELETE FROM courses WHERE course_id=?";
     private static final String INSERT_BY_IDS = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
-    private static final String REMOVE_BY_IDS = "DELETE FROM students_courses WHERE student_id=? AND course_id=?;";
+    private static final String REMOVE_BY_IDS = "DELETE FROM students_courses WHERE student_id=? AND course_id=?";
+    private static final String SELECT_BY_STUDENT = "SELECT student_id, course_id, course_name, course_description FROM courses "
+                                                  + "JOIN students_courses USING (course_id) JOIN students USING (student_id) "
+                                                  + "WHERE student_id=?";
 
     private final DBConnectionFactory connectionFactory;
-    
+
     public CourseService(DBConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
@@ -122,6 +125,27 @@ public class CourseService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Course> findCoursesByStudentId(Long studentId) {
+        List<Course> courses = new ArrayList<>();
+
+        try (Connection connection = connectionFactory.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SELECT_BY_STUDENT)) {
+
+            statement.setLong(1, studentId);
+            ResultSet coursesData = statement.executeQuery();
+
+            while (coursesData.next()) {
+                courses.add(fillCourseEntity(coursesData));
+            }
+            coursesData.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
     }
 
     private Course fillCourseEntity(ResultSet data) throws SQLException {
